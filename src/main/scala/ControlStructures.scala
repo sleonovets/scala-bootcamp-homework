@@ -1,9 +1,9 @@
-package com.evolutiongaming.bootcamp.basics
+package com.bootcamp.homework
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
-object ControlStructuresHomework {
+object ControlStructures {
 
   // Homework
 

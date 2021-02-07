@@ -30,6 +30,8 @@ object ControlStructures {
   // In case of commands that cannot be parsed or calculations that cannot be performed,
   // output a single line starting with "Error: "
 
+  val errorPrefix = "Error: ";
+
   sealed trait Command
 
   object Command {
@@ -66,7 +68,7 @@ object ControlStructures {
 
     val parsed = parameters.tail.map(el => Try(el.toDouble) match {
       case Success(value: Double) => value
-      case Failure(exception) => exception.toString
+      case Failure(exception)     => exception.toString
     })
 
     //    val numbers: List[Double] = for (a: Double <- parsed) yield a
@@ -74,36 +76,36 @@ object ControlStructures {
 
 
     if (parsed.length != numbers.length) {
-      return Left(ErrorMessage("Error: numbers parse error"))
+      return Left(ErrorMessage("numbers parsing error"))
     }
 
     if (numbers.length < 2) {
-      return Left(ErrorMessage("Error: should be three arguments at least"))
+      return Left(ErrorMessage("should be three arguments at least"))
     }
 
     Try(Operation.withName(parameters.head)) match {
       case Success(operation) => operation match {
-        case Operation.DIVIDE => Right(Command.Divide(numbers.head, numbers.tail.head))
-        case Operation.SUM => Right(Command.Sum(numbers))
+        case Operation.DIVIDE  => Right(Command.Divide(numbers.head, numbers.tail.head))
+        case Operation.SUM     => Right(Command.Sum(numbers))
         case Operation.AVERAGE => Right(Command.Average(numbers))
-        case Operation.MAX => Right(Command.Max(numbers))
-        case Operation.MIN => Right(Command.Min(numbers))
+        case Operation.MAX     => Right(Command.Max(numbers))
+        case Operation.MIN     => Right(Command.Min(numbers))
       }
-      case Failure(_) => Left(ErrorMessage("Error: command type is not correct"))
+      case Failure(_)         => Left(ErrorMessage("command type is not correct"))
     }
   }
 
   def calculate(x: Command): Either[ErrorMessage, Result] = {
     x match {
       case Command.Divide(dividend, divisor) => divisor match {
-        case 0 => Left(ErrorMessage("Error: invalid operation"))
+        case 0 => Left(ErrorMessage("invalid operation"))
         case _ => Right(CommandResult(Operation.DIVIDE, dividend / divisor))
       }
-      case Command.Sum(numbers) => Right(CommandResult(Operation.SUM, numbers.sum))
-      case Command.Min(numbers) => Right(CommandResult(Operation.MIN, numbers.min))
-      case Command.Max(numbers) => Right(CommandResult(Operation.MAX, numbers.max))
-      case Command.Average(numbers) => numbers.length match {
-        case 0 => Left(ErrorMessage("Error: invalid operation"))
+      case Command.Sum(numbers)              => Right(CommandResult(Operation.SUM, numbers.sum))
+      case Command.Min(numbers)              => Right(CommandResult(Operation.MIN, numbers.min))
+      case Command.Max(numbers)              => Right(CommandResult(Operation.MAX, numbers.max))
+      case Command.Average(numbers)          => numbers.length match {
+        case 0 => Left(ErrorMessage("invalid operation"))
         case _ => Right(CommandResult(Operation.AVERAGE, numbers.sum / numbers.length))
       }
     }
@@ -112,7 +114,7 @@ object ControlStructures {
   def renderResult(x: Result): String = {
     x match {
       case CommandResult(operation: Operation.Value, value) => s"the result of the ${operation} command is ${value.toString}"
-      case _ => "Error: unexpected error"
+      case _                                                => "unexpected error"
     }
   }
 
@@ -123,7 +125,7 @@ object ControlStructures {
       result <- calculate(parsedCommand)
     } yield renderResult(result)
 
-    evaluationResult.left.map(_.value).merge
+    evaluationResult.left.map(errorPrefix + _.value).merge
   }
 
   // This `main` method reads lines from stdin, passes each to `process` and outputs the return value to stdout

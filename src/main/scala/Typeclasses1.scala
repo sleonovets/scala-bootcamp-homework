@@ -165,7 +165,10 @@ object Typeclasses1 {
 
       implicit def sizeScoreIterate[F[_] : Iterate, T: GetSizeScore]: GetSizeScore[F[T]] = iterator => {
         val ev = implicitly[Iterate[F]]
-        ev.iterator(iterator).map(_.sizeScore).sum + 12
+        ev.iterator(iterator)
+          .map(_.sizeScore)
+          .sum
+        +12
       }
 
       implicit def sizeScoreIterate2[F[_, _] : Iterate2, K: GetSizeScore, V: GetSizeScore]: GetSizeScore[F[K, V]] = iterator2 => {
@@ -173,7 +176,9 @@ object Typeclasses1 {
         val keySize = ev.iterator1(iterator2)
           .map(_.sizeScore)
           .sum
-        val valueSize = ev.iterator2(iterator2).map(_.sizeScore).sum
+        val valueSize = ev.iterator2(iterator2)
+          .map(_.sizeScore)
+          .sum
         keySize + valueSize + 12
       }
     }

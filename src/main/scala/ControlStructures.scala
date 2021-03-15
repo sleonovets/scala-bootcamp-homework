@@ -64,7 +64,7 @@ object ControlStructures {
 
   def parseCommand(x: String): Either[ErrorMessage, Command] = {
 
-    val parameters = x.trim.split("\\s+") toList
+    val parameters = x.trim.split("\\s+").toList
 
     val parsed = parameters.tail.map(el => Try(el.toDouble) match {
       case Success(value: Double) => value
